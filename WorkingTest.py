@@ -1,5 +1,9 @@
+#libraries used in this game
 import random
 
+
+
+#calsses of games
 class Dealer:
     def __init__ (self, cards)
 
@@ -70,7 +74,7 @@ class Player:
 
 
 ############################################################################################################
-
+#functions of games
 def start_menu():
     pass
 
@@ -198,7 +202,8 @@ def splitting(obj):
     obj.cards.popitem()
     card_distribution(obj)
     cards_value(obj)
-################################################################################################################
 
+################################################################################################################
+#loops and starting of game
 turn_round = 0
 obj = turn_check()
