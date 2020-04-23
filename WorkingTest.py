@@ -1,5 +1,13 @@
 import random
 
+class Dealer:
+    def __init__ (self, cards)
+
+        self.cards = {}
+        self.card_value = 0
+        self.win = 0
+        self.turn = 0
+        
 class Player:
     def __init__ (self, bet, cards)
 
@@ -17,9 +25,6 @@ class Player:
         self.l = []
         self.l_values = []
 
-
-    
-
     def pool_value(self):
         if self.surrender == 1:
             self.pool = self.pool - ((self.bet)/2)
@@ -34,8 +39,7 @@ class Player:
         
         if self.l[1] == self.l[-1]:
             if self.pool > bet*2:
-
-
+                return 1
 
     def double_betting(self):
         bet = bet*2
@@ -44,13 +48,21 @@ class Player:
         pass
 
     def split_check(self):
-        pass
+        
+        if self.l[0] == self.[1]:
+            if self.pool > bet*2:
+                return 1
 
-    def __init__(self):
-        pass
+    def __init__(self,obj):
+        self.cards = {f'{obj.l[-1]}':obj.l[-1]}
+        self.l = []
+        self.bet = obj.bet
+        self.pool = obj.pool
+        #self.l.append(obj.l[-1])
 
     def surrender (self):
         self.pool_value(surrender = 1)
+        self.win = 0
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
 
@@ -59,11 +71,29 @@ class Player:
 
 ############################################################################################################
 
+def start_menu():
+    pass
+
+def option_menu():
+    pass
+
+def start():
+
+    p = Player(bet, cards)
+    d = Dealer(cards)
+    obj_list = [p,d]
+    if turn_round == 0:
+        p.bet = int(input('Enter the Bet'))
+
+    else:
+        p.bet = int(input('Enter the Bet'))
+
+        if p.pool>p.bet:
+            print('Bet Only What You Can Afford.')
+            p.bet = int(input('Enter the Bet'))
+
 def turn_check(obj_list):
-    #global obj_list
-
     for obj in obj_list:
-
         if obj.turn == 1:
             return obj
 
@@ -106,7 +136,7 @@ def cards_value(obj):
             l_values.append(l[i])
             l_sum = sum(l_values)
         
-        if obj == p:
+        if obj == p or obj == p2:
             obj.l = l
             obj.l_values = l_values
         
@@ -120,16 +150,20 @@ def card_distribution(obj):
     obj.cards[str(c)] = c
 
 def bj_check(obj):
-    #add the changed betting amount setting.
+
     if obj.card_value == 21:
         obj.win = 1
-        return 1
+        
+        if obj == p:
+            obj.bet = obj.bet + (obj.bet/2)
+
     else:
         return 0
 
 def bust_check(obj):
     
     if obj.card_value > 21:
+        obj.win = 0
         return 0
 
     else:
@@ -138,22 +172,33 @@ def bust_check(obj):
 def winning_check(obj_list):
 
     if obj_list[0].card_value > obj[1].card_value:
+        obj_list[0].win = 1
         return 1
 
     else:
         return 0
 
-def end_menu():
-    l =[p.win, p.b]
-
-    if l.any(1):
-        won()
-        p.win = 1
-
-    elif l.all(0):
-        lost()
-        p.win = 0
-
+def end_menu(p.win):
+    
     p.pool_value()
-#revise the end menu fucntion.
+
+    if p.win == 1:
+        won()
+        
+
+    elif p.win == 0:
+        lost()
+
+def splitting(obj):
+    p2 = Player(obj)
+    card_distribution(p2)
+    cards_value(p2)
+    obj.l.pop()
+    obj.l_values.pop()
+    obj.cards.popitem()
+    card_distribution(obj)
+    cards_value(obj)
+################################################################################################################
+
+turn_round = 0
 obj = turn_check()
