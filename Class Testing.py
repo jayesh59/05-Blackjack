@@ -11,9 +11,10 @@ bet = int(input('Enter The Betting Value'))
 p = Player(bet, 0 )
 
 def test(obj):
-
-    obj.c = '1k'
+    if obj == p:
+        obj.c = '1k'
     return obj.c
+
 
 p.c = test(p)
 print(p.c)
