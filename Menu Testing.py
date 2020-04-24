@@ -3,14 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
  
 shape = (720,1680,3)
-black = np.zeros(shape)
+black = np.zeros(shape, dtype =  np.int32)
 #black = cv2.cvtColor(black, cv2.COLOR_BGR2GRAY)
 
-def frame_size():
-    global black
+def video_format_layout():
+    #global black
     while True:
 
-        cv2.imshow('Start Menu', black)
+        black_img = start_menu_layout()
+        cv2.imshow('Start Menu', black_img)
 
         key = cv2.waitKey(1) & 0xFF 
 
@@ -19,13 +20,19 @@ def frame_size():
 
     cv2.destroyAllWindows()
 
-def details_coordinates():
+def start_menu_layout():
     global black
     img = black.copy()
-    
-    cv2.putText(img,'BlackJack',(0, 135), cv2.FONT_HERSHEY_COMPLEX, 5, 255, 10)
-    plt.imshow(img, cmap = 'gray')
-    plt.show()
-    
+    y = 0
 
-details_coordinates()    
+    cv2.putText(img,'BlackJack',(423, 247), cv2.FONT_HERSHEY_COMPLEX, 5, (255,255,255), 10)
+    
+    l_options = ['1. Start', '2. Rules', '3. Exit']
+
+    for string in l_options:
+        cv2.putText(img, string, (600, 400+y), cv2.FONT_HERSHEY_PLAIN, 4, (255,255,255), 10)
+        y= y+67
+
+    return img
+
+video_format_layout()    
