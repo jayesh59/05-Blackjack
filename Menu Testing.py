@@ -122,8 +122,14 @@ def stats_layout(obj):
 
     return img
 
+def headings_badges():
 
+    shape1 = (105, 325, 3)
+    shape2 = (85, 325, 3)
+    img1 = np.zeros(shape1)
+    img2 = np.zeros(shape2)
 
-end_menu_layout()
-video_format_layout()
-#start_menu_layout() 
+    cv2.putText(img,'Player',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
+    cv2.putText(img2,'Dealer',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
+
+    return (img1, img2)
