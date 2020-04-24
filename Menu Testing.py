@@ -131,7 +131,7 @@ def headings_badges():
     img1 = np.zeros(shape1)
     img2 = np.zeros(shape2)
 
-    cv2.putText(img,'Player',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
+    cv2.putText(img1,'Player',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
     cv2.putText(img2,'Dealer',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
 
     return (img1, img2)

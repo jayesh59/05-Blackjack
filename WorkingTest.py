@@ -5,7 +5,7 @@ import random
 
 #calsses of games
 class Dealer:
-    def __init__ (self, cards)
+    def __init__ (self, cards):
 
         self.cards = {}
         self.card_value = 0
@@ -13,7 +13,7 @@ class Dealer:
         self.turn = 0
         
 class Player:
-    def __init__ (self, bet, cards)
+    def __init__ (self, bet, cards):
 
         #self.c = 0
         self.bet = bet
@@ -84,6 +84,8 @@ def option_menu():
 
 def start(obj = None):
     
+    bet = 0
+    cards =0
     p = Player(bet, cards)
     d = Dealer(cards)
     obj_list = [p,d]
