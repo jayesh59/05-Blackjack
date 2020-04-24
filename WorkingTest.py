@@ -81,20 +81,21 @@ def start_menu():
 def option_menu():
     pass
 
-def start():
-
+def start(obj = None):
+    
     p = Player(bet, cards)
     d = Dealer(cards)
     obj_list = [p,d]
-    if turn_round == 0:
-        p.bet = int(input('Enter the Bet'))
+    p.bet = int(input('Enter the Bet'))
 
-    else:
-        p.bet = int(input('Enter the Bet'))
+    if obj is not None:
+        if turn_round != 0:
+            p.pool = obj.pool
+            if p.pool>p.bet:
+                print('Bet Only What You Can Afford.')
+                p.bet = int(input('Enter the Bet'))
 
-        if p.pool>p.bet:
-            print('Bet Only What You Can Afford.')
-            p.bet = int(input('Enter the Bet'))
+        del obj
 
 def turn_check(obj_list):
     for obj in obj_list:
