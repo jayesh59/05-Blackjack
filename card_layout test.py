@@ -46,7 +46,7 @@ for i in cards:
     plt.show()
 
 
-'''
+
 plt.imshow(cards[0])
 plt.show()
-'''
+
