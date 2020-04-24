@@ -104,13 +104,23 @@ def option_menu_layout(obj):
             y = y + 30    
 
     return img
-    
+
 def card_layout(obj):
     pass
 
 def stats_layout(obj):
-    pass
+    
+    shape = (85, 305, 3)
+    img = np.zeros(shape)
+    y = 0 
+    
+    l_options = {'1. Bet':f' : {obj.bet}', '2. Card Value':f' : {obj.card_value}', '3. Pool':f' : {obj.pool}'}
 
+    for string in l_options.keys():
+        cv2.putText(img, string + l_options[string], (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
+        y = y + 30    
+
+    return img
 
 
 
