@@ -87,6 +87,7 @@ def headings_badges():
 
     return (img1, img2)
 
+#Initiation
 bet = 0
 cards = 0
 p = Player(bet, cards)
@@ -97,9 +98,28 @@ stats  = stats_layout(p)
 headings = headings_badges()
 player, dealer = headings
 
+#Acquiring shapes :
+option_y, option_x, _ = option.shape
+stats_y, stats_x, _ =  stats.shape
+player_y, player_x, _ = player.shape
+dealer_y, dealer_x, _ = dealer.shape
 
+#line drawing:
 cv2.line(bg_copy, (840,50), (840,670), (0,255,0), 10)
 
+#Player Heading Insertion:
+bg_copy[20:20+player_y, 257:257+player_x] = player
+
+#Dealer Heading Insertion:
+bg_copy[20:20+dealer_y, 1097:1097+dealer_x] = dealer
+
+#Stats Menu Insertion:
+bg_copy[715-stats_y:715, 5:5+stats_x] = stats
+
+#Options Menu Insertion:
+bg_copy[715-option_y:715, 1675-option_x:1675] = option
+
+#Displaying:
 bg = cv2.cvtColor(bg_copy,cv2.COLOR_BGR2RGB)
 
 plt.imshow(bg)
