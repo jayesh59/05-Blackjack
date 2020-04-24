@@ -67,6 +67,7 @@ class Player:
     def surrender (self):
         self.pool_value(surrender = 1)
         self.win = 0
+        self.surrender = 1
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
 
@@ -191,7 +192,7 @@ def end_menu(p.win):
         won()
         
 
-    elif p.win == 0:
+    elif p.win == 0 or p.surrender == 1:
         lost()
 
 def splitting(obj):
