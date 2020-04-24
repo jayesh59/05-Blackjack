@@ -70,8 +70,41 @@ def gameplay_layout(obj):
     pass
 
 def option_menu_layout(obj):
-    pass
 
+    shape = (145, 258, 3)
+    img = np.zeros(shape)
+    y = 0 
+    
+    l_options = ['1. Stay', '2. Hit', '3. Double Down', '4. Split', '5. Surrender']
+
+    for string in l_options:
+        
+        if string[0] == '3':
+
+            if obj.dd == 1:
+                colour = (255,255,255)
+            else:
+                colour = (255,0,0)
+            
+            cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
+            y = y + 30
+
+        elif string[0] == '4':
+
+            if obj.splitting == 1:
+                colour = (255,255,255)
+            else:
+                colour = (255,0,0)
+            
+            cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
+            y = y + 30   
+
+        else:
+            cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
+            y = y + 30    
+
+    return img
+    
 def card_layout(obj):
     pass
 
