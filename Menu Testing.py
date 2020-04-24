@@ -23,7 +23,7 @@ def details_coordinates():
     global black
     img = black.copy()
     
-    cv2.putText(img,'BlackJack',(0, 250), cv2.FONT_HERSHEY_COMPLEX, 10, 255, 10)
+    cv2.putText(img,'BlackJack',(0, 135), cv2.FONT_HERSHEY_COMPLEX, 5, 255, 10)
     plt.imshow(img, cmap = 'gray')
     plt.show()
     
