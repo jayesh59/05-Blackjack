@@ -71,7 +71,7 @@ def gameplay_layout(obj):
 
 def option_menu_layout(obj):
 
-    shape = (145, 258, 3)
+    shape = (210, 340, 3)
     img = np.zeros(shape)
     y = 0 
     
@@ -102,6 +102,8 @@ def option_menu_layout(obj):
         else:
             cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
             y = y + 30    
+    
+    cv2.putText(img, 'Press Your Choice...', (0, 54+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
 
     return img
 
