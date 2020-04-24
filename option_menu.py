@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-shape = (145, 258, 3)
+shape = (210, 340, 3)
 img = np.zeros(shape, dtype = np.uint16)
 y = 0 
 splitting = 0
@@ -35,7 +35,10 @@ for string in l_options:
     else:
         cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
         y = y + 30    
- 
+    
+    
+cv2.putText(img, 'Press Your Choice...', (0, 54+y), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), 2)
+
 cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 img = np.int32(img)
 plt.imshow(img)
