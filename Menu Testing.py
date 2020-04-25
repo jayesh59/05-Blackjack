@@ -131,7 +131,7 @@ def card_layout(obj):
     img_copy[y:y+shapes[int((a/100))].shape[0], x:x+shapes[int((a/100))].shape[1]] = shapes[int((a/100))]
 
     x = a%100
-    a = a/100
+    a = int(a/100)
 
     if x<10 & x != 0:
         if a%2 == 0:
