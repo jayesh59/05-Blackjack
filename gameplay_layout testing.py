@@ -52,7 +52,7 @@ def option_menu_layout(obj):
             if obj.dd == 1:
                 colour = (255,255,255)
             else:
-                colour = (255,0,0)
+                colour = (0,0,255)
             
             cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
             y = y + 30
@@ -62,7 +62,7 @@ def option_menu_layout(obj):
             if obj.splitting == 1:
                 colour = (255,255,255)
             else:
-                colour = (255,0,0)
+                colour = (0,0,255)
             
             cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
             y = y + 30   
@@ -172,12 +172,13 @@ def headings_badges():
 bet = 0
 p = Player(bet)
 d = Dealer()
+shape = (720, 1680, 3)
+background = np.zeros(shape)
+bg_copy = background.copy()
 
 def shape_acquire(p_turn = 0, d_turn = 0):
-    shape = (720, 1680, 3)
-    background = np.zeros(shape)
-    bg_copy = background.copy()
-    
+
+     #Cards Displayin Functions:   
     def card_display_player(obj):
         card_distribution(obj)
         card = card_layout(obj)
@@ -190,15 +191,12 @@ def shape_acquire(p_turn = 0, d_turn = 0):
         bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
         obj.n += 1
 
+    #Shapes Acquiring Functions:
     option = option_menu_layout(p)
     stats  = stats_layout(p)
-
-
     headings = headings_badges()
     player, dealer = headings
     
-        
-
     #Acquiring sizes :
     option_y, option_x, _ = option.shape
     stats_y, stats_x, _ =  stats.shape
@@ -221,6 +219,7 @@ def shape_acquire(p_turn = 0, d_turn = 0):
     #Options Menu Insertion:
     bg_copy[715-option_y:715, 1675-option_x:1675] = option
 
+    #Cards Insertion:
     if p_turn == 0 and d_turn == 1:
         card_display_dealer(d)
     
@@ -233,6 +232,9 @@ def shape_acquire(p_turn = 0, d_turn = 0):
     
     return bg_copy
 
+    #Resetting of the Stats and Option Menu Ground:
+    bg_copy[715-option_y:715, 1675-option_x:1675] = np.zeros((210, 340, 3))
+    bg_copy[715-stats_y:715, 5:5+stats_x] = np.zeros((85, 305, 3))
 
 while True:
     
@@ -254,15 +256,5 @@ while True:
 
     cv2.imshow('Gameplay_Layout', frame)
     
+cv2.destroyAllWindows()
 
-'''
-#Displaying:
-bg_copy = shape_acquire()
-print(list(p.cards.values()))
-print(list(d.cards.values()))
-bg = cv2.cvtColor(bg_copy,cv2.COLOR_BGR2RGB)
-
-
-plt.imshow(bg)
-plt.show()
-'''
