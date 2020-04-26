@@ -4,6 +4,10 @@ import random
 
 card_set = ()
 len_set = 0
+p = 0
+d = 0
+p2 = 0
+obj_list = 0
 
 #calsses of games
 class Dealer:
@@ -65,6 +69,7 @@ class Player:
         self.l = []
         self.bet = obj.bet
         self.pool = obj.pool
+        self.n = 0
         #self.l.append(obj.l[-1])
 
     def surrender (self):
@@ -86,15 +91,17 @@ def option_menu():
     pass
 
 def start(obj = None):
-    
+    global p, d, obj_list, card_set, len_set
     bet = 0
-    cards =0
+    cards = 0
     p = Player(bet, cards)
     d = Dealer(cards)
     obj_list = [p,d]
     p.bet = int(input('Enter the Bet'))
 
     if obj is not None:
+        card_set = ()
+        len_set = 0
         if turn_round != 0:
             p.pool = obj.pool
             if p.pool>p.bet:
@@ -191,10 +198,15 @@ def bust_check(obj):
 
 def winning_check(obj_list):
 
-    if obj_list[0].card_value > obj[1].card_value:
+    if len(obj_list) == 3:
+        if obj_list[2].card_value > obj_list[1].card_value:
+            obj_list[0].win = 1
+            return 1
+
+    if obj_list[0].card_value > obj_list[1].card_value:
         obj_list[0].win = 1
         return 1
-
+  
     else:
         return 0
 
@@ -210,14 +222,12 @@ def end_menu(p.win):
         lost()
 
 def splitting(obj):
+    global obj_list
     p2 = Player(obj)
-    card_distribution(p2)
-    cards_value(p2)
+    obj_list.append(p2)
     obj.l.pop()
     obj.l_values.pop()
     obj.cards.popitem()
-    card_distribution(obj)
-    cards_value(obj)
 
 ################################################################################################################
 #loops and starting of game
