@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
  
 shape = (720,1680,3)
 black = np.zeros(shape)
+bg_copy = black.copy()
 
 def video_format_layout(layout, obj = None):
     #global black
@@ -66,8 +67,65 @@ def end_menu_layout(obj):
     layout_list = ['End Menu', img, 'c']
     return layout_list
 
-def gameplay_layout(obj):
-    pass
+def gameplay_layout(p_turn = 0, d_turn = 0):
+
+     #Cards Displayin Functions:   
+    def card_display_player(obj):
+        card_distribution(obj)
+        card = card_layout(obj)
+        bg_copy[170:170+card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
+        obj.n += 1
+    
+    def card_display_dealer(obj):
+        card_distribution(obj)
+        card = card_layout(obj)
+        bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
+        obj.n += 1
+
+    #Shapes Acquiring Functions:
+    option = option_menu_layout(p)
+    stats  = stats_layout(p)
+    headings = headings_badges()
+    player, dealer = headings    
+
+    #Acquiring sizes :
+    option_y, option_x, _ = option.shape
+    stats_y, stats_x, _ =  stats.shape
+    player_y, player_x, _ = player.shape
+    dealer_y, dealer_x, _ = dealer.shape
+    card_y, card_x, _ = (133, 75, 3)
+
+    #line drawing:
+    cv2.line(bg_copy, (840,50), (840,670), (0,255,0), 10)
+
+    #Player Heading Insertion:
+    bg_copy[20:20+player_y, 257:257+player_x] = player
+
+    #Dealer Heading Insertion:
+    bg_copy[20:20+dealer_y, 1097:1097+dealer_x] = dealer
+
+    #Stats Menu Insertion:
+    bg_copy[715-stats_y:715, 5:5+stats_x] = stats
+
+    #Options Menu Insertion:
+    bg_copy[715-option_y:715, 1675-option_x:1675] = option
+
+    #Cards Insertion:
+    if p_turn == 0 and d_turn == 1:
+        card_display_dealer(d)
+    
+    elif p_turn == 1 and d_turn == 0:
+        card_display_player(p)
+
+    elif p_turn == 1 and d_turn == 1:
+        card_display_dealer(d)
+        card_display_player(p)
+    
+    return bg_copy
+
+    #Resetting of the Stats and Option Menu Ground:
+    bg_copy[715-option_y:715, 1675-option_x:1675] = np.zeros((210, 340, 3))
+    bg_copy[715-stats_y:715, 5:5+stats_x] = np.zeros((85, 305, 3))
 
 def option_menu_layout(obj):
 
@@ -199,3 +257,33 @@ def headings_badges():
     cv2.putText(img2,'Dealer',(0, 75), cv2.FONT_HERSHEY_COMPLEX, 3, (255,255,255), 7)
 
     return (img1, img2)
+
+def displaying_starting_window():
+
+    frame = start_menu_layout()
+    cv2.imshow('BlackJack Start', frame)
+
+    k = cv2.waitKey(1) & 0xFF
+
+    if k == ord('1'):
+        pass
+
+def displaying_gameplay_window():
+
+    frame = gameplay_layout()
+    cv2.imshow('BlackJack Gameplay', frame)
+
+    k = cv2.waitKey(1) & 0xFF
+
+    if k == ord('1'):
+        pass
+
+def displaying_ending_window():
+
+    frame = end_menu_layout()
+    cv2.imshow('BlackJack Finish', frame)
+
+    k = cv2.waitKey(1) & 0xFF
+
+    if k == ord('1'):
+        pass
