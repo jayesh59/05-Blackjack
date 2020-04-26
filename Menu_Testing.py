@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from WorkingTest import *
  
 shape = (720,1680,3)
 black = np.zeros(shape)
@@ -26,7 +27,8 @@ def end_menu_layout(obj):
     global black
     img = black.copy()
     y = 0
-
+    obj.pool_value()
+    
     if obj.surrender == 1:
         cv2.putText(img,'U Surrendered!',(320, 247), cv2.FONT_HERSHEY_COMPLEX, 4, (255,255,255), 10)
 
@@ -36,7 +38,7 @@ def end_menu_layout(obj):
     elif obj.win == 1:
         cv2.putText(img,'Victory!!!',(423, 247), cv2.FONT_HERSHEY_COMPLEX, 5, (255,255,255), 10)
    
-   l_options = ['1. Stats Status', '2. Next Round', '3. Exit']
+    l_options = ['1. Stats Status', '2. Next Round', '3. Exit']
 
     for string in l_options:
         cv2.putText(img, string, (600, 400+y), cv2.FONT_HERSHEY_PLAIN, 4, (255,255,255), 7)
@@ -53,7 +55,7 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card  
         obj.n += 1
         p.n -= 1
-        bg_copy[170 + :170 + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = np.zeros(card.shape)
+        bg_copy[170:170 + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = np.zeros(card.shape)
         p.n -= 1  
                
     def card_display_player(obj):
@@ -120,8 +122,6 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         elif p_turn == 1 and d_turn == 1:
             card_display_dealer(d)
             card_display_player(p)
-        
-        elif p2
 
     elif p_dd == 1:
         card_distribution(p)
@@ -285,31 +285,52 @@ def headings_badges():
 
 #Functions to print and call the working funtions of the game:
 def displaying_starting_window():
+    while True:
 
-    frame = start_menu_layout()
-    cv2.imshow('BlackJack Start', frame)
+        frame = start_menu_layout()
+        cv2.imshow('BlackJack Start', frame)
 
-    k = cv2.waitKey(1) & 0xFF
+        k = cv2.waitKey(1) & 0xFF
 
-    if k == ord('1'):
-        pass
+        if k == 27 or k == ord('3'):
+            break
+
+        elif k == ord('1'):
+            start()
+            
+
+    cv2.destroyAllWindows()
 
 def displaying_gameplay_window():
 
-    frame = gameplay_layout()
-    cv2.imshow('BlackJack Gameplay', frame)
+    while True:
 
-    k = cv2.waitKey(1) & 0xFF
+        frame = gameplay_layout()
+        cv2.imshow('BlackJack Gameplay', frame)
 
-    if k == ord('1'):
-        pass
+        k = cv2.waitKey(1) & 0xFF
+
+        if k == 27:
+            break
+
+        elif k == ord('1'):
+            pass
+
+    cv2.destroyAllWindows
 
 def displaying_ending_window():
 
-    frame = end_menu_layout()
-    cv2.imshow('BlackJack Finish', frame)
+    while True:
 
-    k = cv2.waitKey(1) & 0xFF
+        frame = end_menu_layout()
+        cv2.imshow('BlackJack Finish', frame)
 
-    if k == ord('1'):
-        pass
+        k = cv2.waitKey(1) & 0xFF
+
+        if k == 27:
+            break
+
+        elif k == ord('1'):
+            pass
+
+    cv2.destroyAllWindows

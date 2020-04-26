@@ -60,7 +60,7 @@ class Player:
 
     def split_check(self):
         
-        if self.l[0] == self.[1]:
+        if self.l[0] == self.l[1]:
             if self.pool > bet*2:
                 return 1
 
@@ -210,17 +210,6 @@ def winning_check(obj_list):
     else:
         return 0
 
-def end_menu(p.win):
-    
-    p.pool_value()
-
-    if p.win == 1:
-        won()
-        
-
-    elif p.win == 0 or p.surrender == 1:
-        lost()
-
 def splitting(obj):
     global obj_list
     p2 = Player(obj)
@@ -231,5 +220,7 @@ def splitting(obj):
 
 ################################################################################################################
 #loops and starting of game
+'''
 turn_round = 0
-obj = turn_check()
+obj = turn_check(obj_list)
+'''
