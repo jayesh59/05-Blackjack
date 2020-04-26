@@ -20,8 +20,7 @@ def start_menu_layout():
         cv2.putText(img, string, (600, 400+y), cv2.FONT_HERSHEY_PLAIN, 4, (255,255,255), 7)
         y= y+67
         
-    layout_list = ['Start Menu', img, 'a']
-    return layout_list
+    return img
 
 def end_menu_layout(obj):
     global black
@@ -43,8 +42,7 @@ def end_menu_layout(obj):
         cv2.putText(img, string, (600, 400+y), cv2.FONT_HERSHEY_PLAIN, 4, (255,255,255), 7)
         y= y+67
 
-    layout_list = ['End Menu', img, 'c']
-    return layout_list
+    return img
 
 def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, p2_dd = 0):
 
