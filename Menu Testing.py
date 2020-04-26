@@ -84,7 +84,7 @@ def option_menu_layout(obj):
             if obj.dd == 1:
                 colour = (255,255,255)
             else:
-                colour = (255,0,0)
+                colour = (0,0,255)
             
             cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
             y = y + 30
@@ -94,7 +94,7 @@ def option_menu_layout(obj):
             if obj.splitting == 1:
                 colour = (255,255,255)
             else:
-                colour = (255,0,0)
+                colour = (0,0,255)
             
             cv2.putText(img, string, (0, 24+y), cv2.FONT_HERSHEY_PLAIN, 2, colour, 2)
             y = y + 30   

@@ -153,8 +153,8 @@ def cards_value(obj):
 
 def card_distribution(obj):
 
-    c_value = random.randint(0,13)
-    c_suite = random.randint(0,4)*100
+    c_value = random.randint(0,12)
+    c_suite = random.randint(0,3)*100
     c = c_value + c_suite    
     obj.cards[str(c)] = c
 
