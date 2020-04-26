@@ -2,7 +2,11 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from WorkingTest import *
- 
+
+global p
+global d
+global p2
+
 shape = (720,1680,3)
 black = np.zeros(shape)
 bg_copy = black.copy()
@@ -23,11 +27,12 @@ def start_menu_layout():
         
     return img
 
-def end_menu_layout(obj):
+def end_menu_layout():
     global black
     img = black.copy()
     y = 0
-    obj.pool_value()
+    p.pool_value()
+    obj = p
     
     if obj.surrender == 1:
         cv2.putText(img,'U Surrendered!',(320, 247), cv2.FONT_HERSHEY_COMPLEX, 4, (255,255,255), 10)
@@ -66,7 +71,9 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         card_distribution(obj)
         card = card_layout(obj)
         bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
+        #print(obj.n)
         obj.n += 1
+        #print(obj.n)
     
     def card_display_dealer(obj):
         card_distribution(obj)
@@ -74,12 +81,13 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
         obj.n += 1
 
+
     #Shapes Acquiring Functions:
     #for options to show according to the split turn because options will be available to double down too.
-    if p_turn == 1:
-        o = p
-    elif p2_turn == 1:
+    if p2_turn == 1:
         o = p2
+    else:
+        o = p
 
     option = option_menu_layout(o)
     stats  = stats_layout(p)
@@ -110,18 +118,21 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
 
     #Cards Insertion:
     if p_dd == 0:
-        if d_turn == 1:
+        if d_turn == 1 and p_turn == 0 and p2_turn == 0:
             card_display_dealer(d)
-        
-        elif p_turn == 1:
+            
+        elif p_turn == 1 and p2_turn == 0 and d_turn == 0:
             card_display_player(p)
 
-        elif p2_turn == 1:
+        elif p2_turn == 1 and p_turn == 0 and d_turn == 0:
             card_display_player(p2)
 
-        elif p_turn == 1 and d_turn == 1:
+        elif p_turn == 1 and d_turn == 1 and p2_turn == 0:
             card_display_dealer(d)
             card_display_player(p)
+            
+        elif p_turn == 0 and p2_turn == 0 and d_turn == 0:
+            pass
 
     elif p_dd == 1:
         card_distribution(p)
@@ -145,7 +156,6 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         card_display_just_after_split(p2)
 
     return bg_copy
-
 #Functions that design individual components of the gameplay layout:
 def option_menu_layout(obj):
 
@@ -206,8 +216,8 @@ def card_layout(obj, p_dd = 0):
     a = list(obj.cards.values())
     a = a[-1]
 
-    y = int((img.shape[0] - shapes[int((a/100))].shape[0])/2)
-    x = int((img.shape[1] - shapes[int((a/100))].shape[1])/2)
+    y = int((img_copy.shape[0] - shapes[int((a/100))].shape[0])/2)
+    x = int((img_copy.shape[1] - shapes[int((a/100))].shape[1])/2)
     img_copy[y:y+shapes[int((a/100))].shape[0], x:x+shapes[int((a/100))].shape[1]] = shapes[int((a/100))]
 
     x = a%100
@@ -297,26 +307,79 @@ def displaying_starting_window():
 
         elif k == ord('1'):
             start()
+            break
             
 
     cv2.destroyAllWindows()
 
 def displaying_gameplay_window():
-
+    global game_round
+    gameplay_layout(p_turn = 1)
+    gameplay_layout(p_turn = 1, d_turn = 1)
+    
     while True:
 
         frame = gameplay_layout()
         cv2.imshow('BlackJack Gameplay', frame)
-
+        bj_p = bj_check(p)
         k = cv2.waitKey(1) & 0xFF
 
         if k == 27:
             break
 
         elif k == ord('1'):
-            pass
+            gameplay_layout(d_turn = 1)
+            
+            bj_d = bj_check(d)
+            if bj_d == 1:
+                if bj_p == 1:
+                    continue
+                else:
+                    p.win = 0
+                    #displaying_ending_window()
 
-    cv2.destroyAllWindows
+            else:
+                if bj_p == 1:
+                    p.win = 1
+                    #displaying_ending_window()
+                else:
+                    pass
+
+            w = winning_check(obj_list)
+           
+            if w == 1:
+                gameplay_layout(d_turn = 1)
+                b_d = bust_check(d)
+                if b_d == 0:
+                    w = winning_check(obj_list)
+                    if w == 1:
+                        p.win = 1
+                        #displaying_ending_window()
+
+                    else:
+                        p.win = 0
+                        #displaying_ending_window()
+                else:
+                    p.win = 1
+                    #displaying_ending_window()
+
+            elif w == 2:
+                continue
+            
+            else:
+                p.win = 0
+                #displaying_ending_window()
+
+        if p.win is None and p.surrender == 0:
+            continue
+        else:
+            frame = gameplay_layout()
+            cv2.imshow('BlackJack Gameplay', frame)
+            game_round += 1
+            displaying_ending_window()
+            break
+
+    cv2.destroyAllWindows()
 
 def displaying_ending_window():
 
@@ -327,10 +390,10 @@ def displaying_ending_window():
 
         k = cv2.waitKey(1) & 0xFF
 
-        if k == 27:
+        if k == 27 or k == ord('3'):
             break
 
         elif k == ord('1'):
             pass
 
-    cv2.destroyAllWindows
+    cv2.destroyAllWindows()

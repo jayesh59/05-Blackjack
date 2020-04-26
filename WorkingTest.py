@@ -1,17 +1,18 @@
 #libraries used in this game
 import random
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 
-
-card_set = ()
+card_set = set()
 len_set = 0
 p = 0
 d = 0
 p2 = 0
 obj_list = 0
 
-#calsses of games
 class Dealer:
-    def __init__ (self):
+   def __init__ (self):
 
         self.n = 0
         self.cards = {}
@@ -20,21 +21,28 @@ class Dealer:
         self.turn = 0
         
 class Player:
-    def __init__ (self, bet):
+    def __init__ (self,obj = None):
 
         self.n = 0
-        self.bet = bet
+        self.bet = 0
         self.pool = 0
         self.cards = {}
         self.card_value = 0
         self.dd = 0
         self.splitting = 0
         self.surrender = 0
-        self.win = 0
+        self.win = None
         self.lose = 0
         self.turn = 0
         self.l = []
         self.l_values = []
+
+        if obj is not None:
+            self.cards = {f'{obj.l[-1]}':obj.l[-1]}
+            self.l = []
+            self.bet = obj.bet
+            self.pool = obj.pool
+            self.n = 0
 
     def pool_value(self):
         if self.surrender == 1:
@@ -64,12 +72,7 @@ class Player:
             if self.pool > bet*2:
                 return 1
 
-    def __init__(self,obj):
-        self.cards = {f'{obj.l[-1]}':obj.l[-1]}
-        self.l = []
-        self.bet = obj.bet
-        self.pool = obj.pool
-        self.n = 0
+    
         #self.l.append(obj.l[-1])
 
     def surrender (self):
@@ -79,23 +82,11 @@ class Player:
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
 
-
-
-
-############################################################################################################
-#functions of games
-def start_menu():
-    pass
-
-def option_menu():
-    pass
-
 def start(obj = None):
     global p, d, obj_list, card_set, len_set
-    bet = 0
-    cards = 0
-    p = Player(bet, cards)
-    d = Dealer(cards)
+
+    p = Player()
+    d = Dealer()
     obj_list = [p,d]
     p.bet = int(input('Enter the Bet'))
 
@@ -116,49 +107,50 @@ def turn_check(obj_list):
             return obj
 
 def cards_value(obj):
-        l=[]
-        l_values = []
+    l=[]
+    l_values = []
+    l_sum = sum(l_values)
+    for i in obj.cards.values():
+        l.append(int(int(i)%100))
+
+    for i in range(len(l)):
         
-        for i in obj.cards.values():
-            l.append(int(i)%100)
+        if l[i] != 0 and l[i] < 10:
+            pass
 
-        for i in range(len(l)):
-            
-            if l[i]%100 !=0 and l[i]%100 < 10:
-                l[i] = l[i]%100
+        elif l[i] > 9:
+            l[i] = 10
 
-            elif l[i]%100 > 9:
-                l[i] = 10
+        elif l[i] == 0:
+            a_value = 21 - l_sum 
+            if a_value-1>=0:
 
-            elif l[i]%100 == 0:
-                a_value = 21 - l_sum 
-                if a_value-1>=0:
+                if a_value-11>=0 :
 
-                    if a_value-11>=0 :
-
-                        if a_value-1 > a_value-11:
-                            l[i] = 11
-
-                        else:
-                            l[i] = 1
+                    if a_value-1 > a_value-11:
+                        l[i] = 11
 
                     else:
                         l[i] = 1
 
-                elif a_value-11>=0:
-                    l[i] = 11
-
                 else:
                     l[i] = 1
-            
-            l_values.append(l[i])
-            l_sum = sum(l_values)
+
+            elif a_value-11>=0:
+                l[i] = 11
+
+            else:
+                l[i] = 1
         
-        if obj == p or obj == p2:
-            obj.l = l
-            obj.l_values = l_values
-        
-        return l_sum
+        l_values.append(l[i])
+        l_sum = sum(l_values)
+    
+    if obj == p or obj == p2:
+        obj.l = l
+        obj.l_values = l_values
+    
+    l_sum = sum(l_values)
+    return l_sum
 
 def card_distribution(obj):
     global len_set, card_set
@@ -179,7 +171,6 @@ def card_distribution(obj):
 def bj_check(obj):
 
     if obj.card_value == 21:
-        obj.win = 1
         
         if obj == p:
             obj.bet = obj.bet + (obj.bet/2)
@@ -190,22 +181,33 @@ def bj_check(obj):
 def bust_check(obj):
     
     if obj.card_value > 21:
-        obj.win = 0
-        return 0
+        return 1
 
     else:
-        return 1
+        return 0
 
 def winning_check(obj_list):
+    p.card_value = cards_value(p)
+    d.card_value = cards_value(d)
 
     if len(obj_list) == 3:
-        if obj_list[2].card_value > obj_list[1].card_value:
-            obj_list[0].win = 1
+        p2.card_value = cards_value(p2)
+        if obj_list[2].card_value > obj_list[1].card_value or obj_list[0].card_value > obj_list[1].card_value:
+            #obj_list[0].win = 1
             return 1
 
+        elif obj_list[2].card_value == obj_list[1].card_value or obj_list[0].card_value == obj_list[1].card_value:
+            return 2
+
+        else:
+            return 0
+
     if obj_list[0].card_value > obj_list[1].card_value:
-        obj_list[0].win = 1
+        #obj_list[0].win = 1
         return 1
+    
+    elif obj_list[0].card_value == obj_list[1].card_value:
+        return 2
   
     else:
         return 0
@@ -217,10 +219,3 @@ def splitting(obj):
     obj.l.pop()
     obj.l_values.pop()
     obj.cards.popitem()
-
-################################################################################################################
-#loops and starting of game
-'''
-turn_round = 0
-obj = turn_check(obj_list)
-'''
