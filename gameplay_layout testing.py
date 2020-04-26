@@ -29,11 +29,11 @@ class Player:
         self.turn = 0
         self.l = []
         self.l_values = []
-
+'''
 shape = (720, 1680, 3)
 background = np.zeros(shape, dtype = np.uint16)
 bg_copy = background.copy()
-
+'''
 def card_distribution(obj):
 
     c_value = random.randint(0,12)
@@ -177,36 +177,64 @@ bet = 0
 p = Player(bet)
 d = Dealer()
 
-option = option_menu_layout(p)
-stats  = stats_layout(p)
+def shape_acquire():
+    shape = (720, 1680, 3)
+    background = np.zeros(shape, dtype = np.uint16)
+    bg_copy = background.copy()
+    
+    def card_display_player(obj):
+        card_distribution(obj)
+        card = card_layout(obj)
+        bg_copy[170:170+card_y, 20 + (n*(card_x+10)):20+card_x + (n*(card_x+10))] = card
+        obj.n += 1
+    
+    def card_display_dealer(obj):
+        card_distribution(obj)
+        card = card_layout(obj)
+        bg_copy[170:170+card_y, 1660-card_x - (n*(card_x+10)):1660 - (n*(card_x+10))] = card
+        obj.n += 1
+
+    option = option_menu_layout(p)
+    stats  = stats_layout(p)
 
 
-headings = headings_badges()
-player, dealer = headings
+    headings = headings_badges()
+    player, dealer = headings
+    
+        
 
-#Acquiring shapes :
-option_y, option_x, _ = option.shape
-stats_y, stats_x, _ =  stats.shape
-player_y, player_x, _ = player.shape
-dealer_y, dealer_x, _ = dealer.shape
-card_y, card_x, _ = (133, 75, 3)
+    #Acquiring sizes :
+    option_y, option_x, _ = option.shape
+    stats_y, stats_x, _ =  stats.shape
+    player_y, player_x, _ = player.shape
+    dealer_y, dealer_x, _ = dealer.shape
+    card_y, card_x, _ = (133, 75, 3)
 
-#line drawing:
-cv2.line(bg_copy, (840,50), (840,670), (0,255,0), 10)
+    #line drawing:
+    cv2.line(bg_copy, (840,50), (840,670), (0,255,0), 10)
 
-#Player Heading Insertion:
-bg_copy[20:20+player_y, 257:257+player_x] = player
+    #Player Heading Insertion:
+    bg_copy[20:20+player_y, 257:257+player_x] = player
 
-#Dealer Heading Insertion:
-bg_copy[20:20+dealer_y, 1097:1097+dealer_x] = dealer
+    #Dealer Heading Insertion:
+    bg_copy[20:20+dealer_y, 1097:1097+dealer_x] = dealer
 
-#Stats Menu Insertion:
-bg_copy[715-stats_y:715, 5:5+stats_x] = stats
+    #Stats Menu Insertion:
+    bg_copy[715-stats_y:715, 5:5+stats_x] = stats
 
-#Options Menu Insertion:
-bg_copy[715-option_y:715, 1675-option_x:1675] = option
+    #Options Menu Insertion:
+    bg_copy[715-option_y:715, 1675-option_x:1675] = option
+
+    for n in range(3):
+        card_display_dealer(d)
+        card_display_player(p)
+    
+    return bg_copy
+
+
 
 #Inserting the Cards:
+'''
 def card_display_player(obj):
     card_distribution(obj)
     card = card_layout(obj)
@@ -222,8 +250,10 @@ def card_display_dealer(obj):
 for n in range(3):
     card_display_dealer(d)
     card_display_player(p)
+'''
 
 #Displaying:
+bg_copy = shape_acquire()
 print(list(p.cards.values()))
 print(list(d.cards.values()))
 bg = cv2.cvtColor(bg_copy,cv2.COLOR_BGR2RGB)
