@@ -6,28 +6,7 @@ shape = (720,1680,3)
 black = np.zeros(shape)
 bg_copy = black.copy()
 
-def video_format_layout(layout, obj = None):
-    #global black
-    while True:
-
-        cv2.imshow(layout[0], layout[1])
-        key = cv2.waitKey(1) & 0xFF 
-
-
-        if layout[2] == 'a':
-            if key == 27 or key == ord('3'):
-                break
-        
-        elif layout[2] == 'b':
-            if key == 27 or key == ord('3'):
-                break
-
-        elif layout[2] == 'c':
-            if key == 27 or key == ord('3'):
-                break
-
-    cv2.destroyAllWindows()
-
+#Functions that design and returns the layout of the 3 stages of game - Start, Gameplay, End:
 def start_menu_layout():
     global black
     img = black.copy()
@@ -67,13 +46,26 @@ def end_menu_layout(obj):
     layout_list = ['End Menu', img, 'c']
     return layout_list
 
-def gameplay_layout(p_turn = 0, d_turn = 0):
+def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, p2_dd = 0):
 
      #Cards Displayin Functions:   
+    def card_display_just_after_split(obj):
+        card = card_layout(obj) 
+        y = card_y + 10
+        bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card  
+        obj.n += 1
+        p.n -= 1
+        bg_copy[170 + :170 + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = np.zeros(card.shape)
+        p.n -= 1  
+               
     def card_display_player(obj):
+        y = 0
+        if obj == p2:
+            y = card_y + 10
+            
         card_distribution(obj)
         card = card_layout(obj)
-        bg_copy[170:170+card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
+        bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
         obj.n += 1
     
     def card_display_dealer(obj):
@@ -83,7 +75,13 @@ def gameplay_layout(p_turn = 0, d_turn = 0):
         obj.n += 1
 
     #Shapes Acquiring Functions:
-    option = option_menu_layout(p)
+    #for options to show according to the split turn because options will be available to double down too.
+    if p_turn == 1:
+        o = p
+    elif p2_turn == 1:
+        o = p2
+
+    option = option_menu_layout(o)
     stats  = stats_layout(p)
     headings = headings_badges()
     player, dealer = headings    
@@ -111,22 +109,46 @@ def gameplay_layout(p_turn = 0, d_turn = 0):
     bg_copy[715-option_y:715, 1675-option_x:1675] = option
 
     #Cards Insertion:
-    if p_turn == 0 and d_turn == 1:
-        card_display_dealer(d)
-    
-    elif p_turn == 1 and d_turn == 0:
-        card_display_player(p)
+    if p_dd == 0:
+        if d_turn == 1:
+            card_display_dealer(d)
+        
+        elif p_turn == 1:
+            card_display_player(p)
 
-    elif p_turn == 1 and d_turn == 1:
+        elif p2_turn == 1:
+            card_display_player(p2)
+
+        elif p_turn == 1 and d_turn == 1:
+            card_display_dealer(d)
+            card_display_player(p)
+        
+        elif p2
+
+    elif p_dd == 1:
+        card_distribution(p)
+        card = card_layout(p, 1)
+        c_y, c_x, _ = card.shape
+        bg_copy[170:170+c_y, 20 + (p.n*(75+10)):20+c_x + (p.n*(75+10))] = card
+        p.n += 1
         card_display_dealer(d)
-        card_display_player(p)
-    
+
+    elif p2_dd == 1:
+        card_distribution(p2)
+        card = card_layout(p2, 1)
+        y = card_y + 10
+        c_y, c_x, _ = card.shape
+        bg_copy[170 + y:170 + y + c_y, 20 + (p2.n*(75+10)):20+c_x + (p2.n*(75+10))] = card
+        p.n += 1
+        card_display_dealer(d)
+
+
+    elif p_split == 1:
+        card_display_just_after_split(p2)
+
     return bg_copy
 
-    #Resetting of the Stats and Option Menu Ground:
-    bg_copy[715-option_y:715, 1675-option_x:1675] = np.zeros((210, 340, 3))
-    bg_copy[715-stats_y:715, 5:5+stats_x] = np.zeros((85, 305, 3))
-
+#Functions that design individual components of the gameplay layout:
 def option_menu_layout(obj):
 
     shape = (210, 340, 3)
@@ -149,7 +171,9 @@ def option_menu_layout(obj):
 
         elif string[0] == '4':
 
-            if obj.splitting == 1:
+            if obj == p2:
+                colour = (0,0,255)
+            elif obj.splitting == 1:
                 colour = (255,255,255)
             else:
                 colour = (0,0,255)
@@ -165,7 +189,7 @@ def option_menu_layout(obj):
 
     return img
 
-def card_layout(obj):
+def card_layout(obj, p_dd = 0):
     shape = (133, 75, 3)
     img_copy = np.ones(shape, dtype = np.uint16) * 255
     
@@ -230,6 +254,9 @@ def card_layout(obj):
                 
             cv2.putText(img_copy, str(x), (0, 15), cv2.FONT_HERSHEY_PLAIN, 1, (0,0,255), 2)
 
+    if p_dd == 1:
+        img_copy = cv2.rotate(img_copy, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    
     return img_copy
 
 def stats_layout(obj):
@@ -258,6 +285,7 @@ def headings_badges():
 
     return (img1, img2)
 
+#Functions to print and call the working funtions of the game:
 def displaying_starting_window():
 
     frame = start_menu_layout()
