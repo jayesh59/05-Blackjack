@@ -2,6 +2,8 @@
 import random
 
 
+card_set = ()
+len_set = 0
 
 #calsses of games
 class Dealer:
@@ -152,11 +154,20 @@ def cards_value(obj):
         return l_sum
 
 def card_distribution(obj):
-
-    c_value = random.randint(0,12)
-    c_suite = random.randint(0,3)*100
-    c = c_value + c_suite    
-    obj.cards[str(c)] = c
+    global len_set, card_set
+   
+    while True:
+        l = len(card_set)
+        if l - len_set == 1:
+            obj.cards[str(c)] = c
+            break
+        else:
+            c_value = random.randint(0,12)
+            c_suite = random.randint(0,3)*100
+            c = c_value + c_suite    
+            card_set.add(c)
+    
+    len_set = l
 
 def bj_check(obj):
 
