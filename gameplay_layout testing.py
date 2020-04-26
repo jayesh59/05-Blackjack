@@ -29,11 +29,7 @@ class Player:
         self.turn = 0
         self.l = []
         self.l_values = []
-'''
-shape = (720, 1680, 3)
-background = np.zeros(shape, dtype = np.uint16)
-bg_copy = background.copy()
-'''
+
 def card_distribution(obj):
 
     c_value = random.randint(0,12)
@@ -177,21 +173,21 @@ bet = 0
 p = Player(bet)
 d = Dealer()
 
-def shape_acquire():
+def shape_acquire(p_turn = 0, d_turn = 0):
     shape = (720, 1680, 3)
-    background = np.zeros(shape, dtype = np.uint16)
+    background = np.zeros(shape)
     bg_copy = background.copy()
     
     def card_display_player(obj):
         card_distribution(obj)
         card = card_layout(obj)
-        bg_copy[170:170+card_y, 20 + (n*(card_x+10)):20+card_x + (n*(card_x+10))] = card
+        bg_copy[170:170+card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
         obj.n += 1
     
     def card_display_dealer(obj):
         card_distribution(obj)
         card = card_layout(obj)
-        bg_copy[170:170+card_y, 1660-card_x - (n*(card_x+10)):1660 - (n*(card_x+10))] = card
+        bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
         obj.n += 1
 
     option = option_menu_layout(p)
@@ -225,33 +221,41 @@ def shape_acquire():
     #Options Menu Insertion:
     bg_copy[715-option_y:715, 1675-option_x:1675] = option
 
-    for n in range(3):
+    if p_turn == 0 and d_turn == 1:
+        card_display_dealer(d)
+    
+    elif p_turn == 1 and d_turn == 0:
+        card_display_player(p)
+
+    elif p_turn == 1 and d_turn == 1:
         card_display_dealer(d)
         card_display_player(p)
     
     return bg_copy
 
 
-
-#Inserting the Cards:
-'''
-def card_display_player(obj):
-    card_distribution(obj)
-    card = card_layout(obj)
-    bg_copy[170:170+card_y, 20 + (n*(card_x+10)):20+card_x + (n*(card_x+10))] = card
-    obj.n += 1
+while True:
     
-def card_display_dealer(obj):
-    card_distribution(obj)
-    card = card_layout(obj)
-    bg_copy[170:170+card_y, 1660-card_x - (n*(card_x+10)):1660 - (n*(card_x+10))] = card
-    obj.n += 1
+    frame = shape_acquire()
 
-for n in range(3):
-    card_display_dealer(d)
-    card_display_player(p)
+    k = cv2.waitKey(1) & 0xFF
+
+    if k == ord('p'):
+        frame = shape_acquire(1, 0)
+
+    elif k == ord('d'):
+        frame = shape_acquire(0, 1)
+
+    else:
+        pass
+
+    if k == 27:
+        break     
+
+    cv2.imshow('Gameplay_Layout', frame)
+    
+
 '''
-
 #Displaying:
 bg_copy = shape_acquire()
 print(list(p.cards.values()))
@@ -261,3 +265,4 @@ bg = cv2.cvtColor(bg_copy,cv2.COLOR_BGR2RGB)
 
 plt.imshow(bg)
 plt.show()
+'''
