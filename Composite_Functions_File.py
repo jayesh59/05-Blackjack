@@ -736,20 +736,24 @@ def winning_check(obj_list):
             return 1
 
         elif obj_list[2].card_value == obj_list[1].card_value or obj_list[0].card_value == obj_list[1].card_value:
-            return 2
+            if obj_list[2].card_value == obj_list[1].card_value:
+                return 22
+            elif obj_list[0].card_value == obj_list[1].card_value:
+                return 21
 
         else:
             return 0
 
-    if obj_list[0].card_value > obj_list[1].card_value:
-        #obj_list[0].win = 1
-        return 1
-    
-    elif obj_list[0].card_value == obj_list[1].card_value:
-        return 2
-  
     else:
-        return 0
+        if obj_list[0].card_value > obj_list[1].card_value:
+            #obj_list[0].win = 1
+            return 1
+    
+        elif obj_list[0].card_value == obj_list[1].card_value:
+            return 2
+    
+        else:
+            return 0
 
 def splitting(obj):
     global obj_list
