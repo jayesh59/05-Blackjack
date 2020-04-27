@@ -137,10 +137,12 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
     elif p_dd == 1:
         card_distribution(p)
         card = card_layout(p, 1)
+        p.double_betting()
         c_y, c_x, _ = card.shape
         bg_copy[170:170+c_y, 20 + (p.n*(75+10)):20+c_x + (p.n*(75+10))] = card
         p.n += 1
         card_display_dealer(d)
+        d.n += 1
 
     elif p2_dd == 1:
         card_distribution(p2)
@@ -150,6 +152,7 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         bg_copy[170 + y:170 + y + c_y, 20 + (p2.n*(75+10)):20+c_x + (p2.n*(75+10))] = card
         p.n += 1
         card_display_dealer(d)
+        d.n += 1
 
 
     elif p_split == 1:
@@ -162,7 +165,8 @@ def option_menu_layout(obj):
     shape = (210, 340, 3)
     img = np.zeros(shape)
     y = 0 
-    
+    obj.dd_check()
+    obj.split_check()
     l_options = ['1. Stay', '2. Hit', '3. Double Down', '4. Split', '5. Surrender']
 
     for string in l_options:
@@ -333,7 +337,10 @@ def displaying_gameplay_window():
             bj_d = bj_check(d)
             if bj_d == 1:
                 if bj_p == 1:
-                    continue
+                    game_round += 1
+                    print('It was a Tie, Begin again...')
+                    start(p)
+                    displaying_gameplay_window()
                 else:
                     p.win = 0
                     #displaying_ending_window()
@@ -370,6 +377,119 @@ def displaying_gameplay_window():
                 p.win = 0
                 #displaying_ending_window()
 
+        elif k == ord('2'):
+            gameplay_layout(p_turn = 1)
+            b_p = bust_check(p)
+            bj_p = bj_check(p)
+
+            if b_p == 1:
+                p.win = 0 
+                #displaying_ending_window()
+
+            else:
+                gameplay_layout(d_turn = 1)
+                bj_d = bj_check(d)
+                if bj_d == 1:
+                    if bj_p == 1:
+                        game_round += 1
+                        print('It was a Tie, Begin again...')
+                        start(p)
+                        displaying_gameplay_window()
+                    else:
+                        p.win = 0
+                        #displaying_ending_window()
+
+                else:
+                    if bj_p == 1:
+                        p.win = 1
+                        #displaying_ending_window()
+                    else:
+                        pass
+
+                w = winning_check(obj_list)
+                if w == 1:
+                    gameplay_layout(d_turn = 1)
+                    b_d = bust_check(d)
+                    if b_d == 0:
+                        w = winning_check(obj_list)
+                        if w == 1:
+                            p.win = 1
+                            #displaying_ending_window()
+
+                        else:
+                            p.win = 0
+                            #displaying_ending_window()
+                    else:
+                        p.win = 1
+                        #displaying_ending_window()
+
+                elif w == 2:
+                    continue
+                
+                else:
+                    p.win = 0
+                    #displaying_ending_window()
+
+        elif k == ord('3'):
+            if p.dd == 0:
+                print('You cannot opt for this yet...')
+                continue
+            else:
+                p.double_betting()
+                gameplay_layout(p_dd = 1)
+                b_p = bust_check(p)
+                #b_d = bust_check(d)
+                if b_p == 1:
+                    p.win = 0 
+                    #displaying_ending_window()
+
+                else:
+                    bj_p = bj_check(p)
+                    bj_d = bj_check(d)
+                 
+                    if bj_d == 1:
+                        if bj_p == 1:
+                            game_round += 1
+                            print('It was a Tie, Begin again...')
+                            start(p)
+                            displaying_gameplay_window()
+                        else:
+                            p.win = 0
+                            #displaying_ending_window()
+
+                    else:
+                        if bj_p == 1:
+                            p.win = 1
+                            #displaying_ending_window()
+                        else:
+                            pass
+                
+                    w = winning_check(obj_list)
+                    if w == 1:
+                        gameplay_layout(d_turn = 1)
+                        b_d = bust_check(d)
+                        if b_d == 0:
+                            w = winning_check(obj_list)
+                            if w == 1:
+                                p.win = 1
+                                #displaying_ending_window()
+
+                            else:
+                                p.win = 0
+                                #displaying_ending_window()
+                        else:
+                            p.win = 1
+                            #displaying_ending_window()
+
+                    elif w == 2:
+                        game_round += 1
+                        print('It was a Tie, Begin again...')
+                        start(p)
+                        displaying_gameplay_window()
+                    
+                    else:
+                        p.win = 0
+        
         if p.win is None and p.surrender == 0:
             continue
         else:

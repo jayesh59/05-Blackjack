@@ -36,13 +36,15 @@ class Player:
         self.turn = 0
         self.l = []
         self.l_values = []
+        self.l2 = []
 
         if obj is not None:
-            self.cards = {f'{obj.l[-1]}':obj.l[-1]}
+            self.cards = {f'{obj.l2[-1]}':obj.l2[-1]}
             self.l = []
-            self.bet = obj.bet
+            self.bet = 0
             self.pool = obj.pool
             self.n = 0
+            self.l2 = []
 
     def pool_value(self):
         if self.surrender == 1:
@@ -54,30 +56,41 @@ class Player:
         elif self.win == 0:
             self.pool = self.pool - self.bet
 
-    def dd_check(self):
-        
-        if self.l[1] == self.l[-1]:
-            if self.pool > bet*2:
-                return 1
+    def split_check(self):
+        if len(self.l2) > 1:
+            if self.l2[-2]%100 == self.l2[-1]%100:
+                if game_round != 0:
+                    if self.pool > bet*2:
+                        self.splitting = 1
+                        return 1
+                else:
+                    self.splitting = 1
+                    return 1
+        else:
+            return 0 
 
     def double_betting(self):
-        bet = bet*2
+        self.bet = self.bet*2
 
     def displaying_vertical(self):
         pass
 
-    def split_check(self):
-        
-        if self.l[0] == self.l[1]:
-            if self.pool > bet*2:
+    def dd_check(self):
+        #l = list(self.cards.values())
+        if len(self.l2) == 2:
+            if game_round != 0:
+                if self.pool > bet*2:
+                    self.dd = 1
+                    return 1
+            else:
+                self.dd = 1
                 return 1
 
+        else:
+            return 0
     
-        #self.l.append(obj.l[-1])
-
     def surrender (self):
-        self.pool_value(surrender = 1)
-        self.win = 0
+        #self.win = 0
         self.surrender = 1
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
@@ -93,7 +106,7 @@ def start(obj = None):
     if obj is not None:
         card_set = ()
         len_set = 0
-        if turn_round != 0:
+        if game_round != 0:
             p.pool = obj.pool
             if p.pool>p.bet:
                 print('Bet Only What You Can Afford.')
@@ -110,6 +123,8 @@ def cards_value(obj):
     l=[]
     l_values = []
     l_sum = sum(l_values)
+    a = 0
+
     for i in obj.cards.values():
         l.append(int(int(i)%100))
 
@@ -122,34 +137,40 @@ def cards_value(obj):
             l[i] = 10
 
         elif l[i] == 0:
-            a_value = 21 - l_sum 
-            if a_value-1>=0:
+            a = l.pop(i)
+            i = i-1
+            continue 
 
-                if a_value-11>=0 :
+        l_values.append(l[i])
+        
+    l_sum = sum(l_values)
+    if a != 0: 
+        a_value = 21 - l_sum 
+        if a_value-1>=0:
 
-                    if a_value-1 > a_value-11:
-                        l[i] = 11
+            if a_value-11>=0 :
 
-                    else:
-                        l[i] = 1
+                if a_value-1 > a_value-11:
+                    a = 11
 
                 else:
-                    l[i] = 1
-
-            elif a_value-11>=0:
-                l[i] = 11
+                    a = 1
 
             else:
-                l[i] = 1
-        
-        l_values.append(l[i])
-        l_sum = sum(l_values)
-    
+                a = 1
+
+        elif a_value-11>=0:
+            a = 11
+
+        else:
+            a = 1
+
+    l_sum = sum(l_values) + a
+
     if obj == p or obj == p2:
         obj.l = l
         obj.l_values = l_values
     
-    l_sum = sum(l_values)
     return l_sum
 
 def card_distribution(obj):
@@ -166,6 +187,8 @@ def card_distribution(obj):
             c = c_value + c_suite    
             card_set.add(c)
     
+    if obj == p or obj == p2:
+        obj.l2 = list(obj.cards.values())
     len_set = l
 
 def bj_check(obj):
@@ -174,6 +197,7 @@ def bj_check(obj):
         
         if obj == p:
             obj.bet = obj.bet + (obj.bet/2)
+        return 1
 
     else:
         return 0
