@@ -39,13 +39,15 @@ class Player:
         self.turn = 0
         self.l = []
         self.l_values = []
+        self.l2 = []
 
         if obj is not None:
-            self.cards = {f'{obj.l[-1]}':obj.l[-1]}
+            self.cards = {f'{obj.l2[-1]}':obj.l2[-1]}
             self.l = []
-            self.bet = obj.bet
+            self.bet = 0
             self.pool = obj.pool
             self.n = 0
+            self.l2 = []
 
     def pool_value(self):
         if self.surrender == 1:
@@ -58,29 +60,43 @@ class Player:
             self.pool = self.pool - self.bet
 
     def dd_check(self):
-        
-        if self.l[1] == self.l[-1]:
-            if self.pool > bet*2:
+        #l = list(self.cards.values())
+        #print(self.l2)
+        if len(self.l2) == 2:
+            #print('2')
+            if game_round != 0:
+                if self.pool > bet*2:
+                    self.dd = 1
+                    return 1
+            else:
+               # print('3')
+                self.dd = 1
+                #print('4')
                 return 1
 
+        else:
+            return 0
+
     def double_betting(self):
-        bet = bet*2
+        self.bet = self.bet*2
 
     def displaying_vertical(self):
         pass
 
     def split_check(self):
-        
-        if self.l[0] == self.l[1]:
-            if self.pool > bet*2:
-                return 1
-
-    
-        #self.l.append(obj.l[-1])
+        if len(self.l2) > 1:
+            if self.l2[-2]%100 == self.l2[-1]%100:
+                if game_round != 0:
+                    if self.pool > bet*2:
+                        self.splitting = 1
+                        return 1
+                else:
+                    self.splitting = 1
+                    return 1
+        else:
+            return 0
 
     def surrender (self):
-        self.pool_value(surrender = 1)
-        self.win = 0
         self.surrender = 1
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
@@ -212,10 +228,12 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
     elif p_dd == 1:
         card_distribution(p)
         card = card_layout(p, 1)
+        p.double_betting()
         c_y, c_x, _ = card.shape
         bg_copy[170:170+c_y, 20 + (p.n*(75+10)):20+c_x + (p.n*(75+10))] = card
         p.n += 1
         card_display_dealer(d)
+        d.n += 1
 
     elif p2_dd == 1:
         card_distribution(p2)
@@ -225,6 +243,7 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         bg_copy[170 + y:170 + y + c_y, 20 + (p2.n*(75+10)):20+c_x + (p2.n*(75+10))] = card
         p.n += 1
         card_display_dealer(d)
+        d.n += 1
 
 
     elif p_split == 1:
@@ -238,7 +257,8 @@ def option_menu_layout(obj):
     shape = (210, 340, 3)
     img = np.zeros(shape)
     y = 0 
-    
+    obj.dd_check()
+    obj.split_check()
     l_options = ['1. Stay', '2. Hit', '3. Double Down', '4. Split', '5. Surrender']
 
     for string in l_options:
@@ -409,7 +429,10 @@ def displaying_gameplay_window():
             bj_d = bj_check(d)
             if bj_d == 1:
                 if bj_p == 1:
-                    continue
+                    game_round += 1
+                    print('It was a Tie, Begin again...')
+                    start(p)
+                    displaying_gameplay_window()
                 else:
                     p.win = 0
                     #displaying_ending_window()
@@ -446,6 +469,119 @@ def displaying_gameplay_window():
                 p.win = 0
                 #displaying_ending_window()
 
+        elif k == ord('2'):
+            gameplay_layout(p_turn = 1)
+            b_p = bust_check(p)
+            bj_p = bj_check(p)
+
+            if b_p == 1:
+                p.win = 0 
+                #displaying_ending_window()
+
+            else:
+                gameplay_layout(d_turn = 1)
+                bj_d = bj_check(d)
+                if bj_d == 1:
+                    if bj_p == 1:
+                        game_round += 1
+                        print('It was a Tie, Begin again...')
+                        start(p)
+                        displaying_gameplay_window()
+                    else:
+                        p.win = 0
+                        #displaying_ending_window()
+
+                else:
+                    if bj_p == 1:
+                        p.win = 1
+                        #displaying_ending_window()
+                    else:
+                        pass
+
+                w = winning_check(obj_list)
+                if w == 1:
+                    gameplay_layout(d_turn = 1)
+                    b_d = bust_check(d)
+                    if b_d == 0:
+                        w = winning_check(obj_list)
+                        if w == 1:
+                            p.win = 1
+                            #displaying_ending_window()
+
+                        else:
+                            p.win = 0
+                            #displaying_ending_window()
+                    else:
+                        p.win = 1
+                        #displaying_ending_window()
+
+                elif w == 2:
+                    continue
+                
+                else:
+                    p.win = 0
+                    #displaying_ending_window()
+
+        elif k == ord('3'):
+            if p.dd == 0:
+                print('You cannot opt for this yet...')
+                continue
+            else:
+                p.double_betting()
+                gameplay_layout(p_dd = 1)
+                b_p = bust_check(p)
+                #b_d = bust_check(d)
+                if b_p == 1:
+                    p.win = 0 
+                    #displaying_ending_window()
+
+                else:
+                    bj_p = bj_check(p)
+                    bj_d = bj_check(d)
+                 
+                    if bj_d == 1:
+                        if bj_p == 1:
+                            game_round += 1
+                            print('It was a Tie, Begin again...')
+                            start(p)
+                            displaying_gameplay_window()
+                        else:
+                            p.win = 0
+                            #displaying_ending_window()
+
+                    else:
+                        if bj_p == 1:
+                            p.win = 1
+                            #displaying_ending_window()
+                        else:
+                            pass
+                
+                    w = winning_check(obj_list)
+                    if w == 1:
+                        gameplay_layout(d_turn = 1)
+                        b_d = bust_check(d)
+                        if b_d == 0:
+                            w = winning_check(obj_list)
+                            if w == 1:
+                                p.win = 1
+                                #displaying_ending_window()
+
+                            else:
+                                p.win = 0
+                                #displaying_ending_window()
+                        else:
+                            p.win = 1
+                            #displaying_ending_window()
+
+                    elif w == 2:
+                        game_round += 1
+                        print('It was a Tie, Begin again...')
+                        start(p)
+                        displaying_gameplay_window()
+                    
+                    else:
+                        p.win = 0
+        
         if p.win is None and p.surrender == 0:
             continue
         else:
@@ -485,7 +621,7 @@ def start(obj = None):
     if obj is not None:
         card_set = ()
         len_set = 0
-        if turn_round != 0:
+        if game_round != 0:
             p.pool = obj.pool
             if p.pool>p.bet:
                 print('Bet Only What You Can Afford.')
@@ -502,6 +638,8 @@ def cards_value(obj):
     l=[]
     l_values = []
     l_sum = sum(l_values)
+    a = 0
+
     for i in obj.cards.values():
         l.append(int(int(i)%100))
 
@@ -514,34 +652,40 @@ def cards_value(obj):
             l[i] = 10
 
         elif l[i] == 0:
-            a_value = 21 - l_sum 
-            if a_value-1>=0:
-
-                if a_value-11>=0 :
-
-                    if a_value-1 > a_value-11:
-                        l[i] = 11
-
-                    else:
-                        l[i] = 1
-
-                else:
-                    l[i] = 1
-
-            elif a_value-11>=0:
-                l[i] = 11
-
-            else:
-                l[i] = 1
+            a = l.pop(i)
+            i = i-1
+            continue 
         
         l_values.append(l[i])
-        l_sum = sum(l_values)
-    
+        
+    l_sum = sum(l_values)
+    if a != 0: 
+        a_value = 21 - l_sum 
+        if a_value-1>=0:
+
+            if a_value-11>=0 :
+
+                if a_value-1 > a_value-11:
+                    a = 11
+
+                else:
+                    a = 1
+
+            else:
+                a = 1
+
+        elif a_value-11>=0:
+            a = 11
+
+        else:
+            a = 1
+
+    l_sum = sum(l_values) + a
+
     if obj == p or obj == p2:
         obj.l = l
         obj.l_values = l_values
     
-    l_sum = sum(l_values)
     return l_sum
 
 def card_distribution(obj):
@@ -558,6 +702,8 @@ def card_distribution(obj):
             c = c_value + c_suite    
             card_set.add(c)
     
+    if obj == p or obj == p2:
+        obj.l2 = list(obj.cards.values())
     len_set = l
 
 def bj_check(obj):
@@ -566,6 +712,7 @@ def bj_check(obj):
         
         if obj == p:
             obj.bet = obj.bet + (obj.bet/2)
+        return 1
 
     else:
         return 0
