@@ -44,10 +44,15 @@ class Player:
         if obj is not None:
             self.cards = {f'{obj.l2[-1]}':obj.l2[-1]}
             self.l = []
+            self.l_values = []
             self.bet = 0
+            self.win = None
             self.pool = obj.pool
             self.n = 0
             self.l2 = []
+            self.surrender = 0
+            self.card_value = 0
+            self.dd = 0
 
     def pool_value(self):
         if self.surrender == 1:
@@ -65,7 +70,7 @@ class Player:
         if len(self.l2) == 2:
             #print('2')
             if game_round != 0:
-                if self.pool > bet*2:
+                if self.pool > self.bet*2:
                     self.dd = 1
                     return 1
             else:
@@ -87,7 +92,7 @@ class Player:
         if len(self.l2) > 1:
             if self.l2[-2]%100 == self.l2[-1]%100:
                 if game_round != 0:
-                    if self.pool > bet*2:
+                    if self.pool > self.bet*2:
                         self.splitting = 1
                         return 1
                 else:
@@ -96,7 +101,7 @@ class Player:
         else:
             return 0
 
-    def surrender (self):
+    def surrender2 (self):
         self.surrender = 1
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
@@ -125,7 +130,7 @@ def end_menu_layout():
     p.pool_value()
     obj = p
     
-    if obj.surrender == 1:
+    if obj.surrender == 1 :
         cv2.putText(img,'U Surrendered!',(320, 247), cv2.FONT_HERSHEY_COMPLEX, 4, (255,255,255), 10)
 
     elif obj.win == 0:
@@ -171,7 +176,8 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         card = card_layout(obj)
         bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
         obj.n += 1
-
+   
+    #bg_copy = np.zeros((720,1680,3))
 
     #Shapes Acquiring Functions:
     #for options to show according to the split turn because options will be available to double down too.
@@ -181,7 +187,7 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         o = p
 
     option = option_menu_layout(o)
-    stats  = stats_layout(p)
+    stats  = stats_layout(o)
     headings = headings_badges()
     player, dealer = headings    
 
@@ -408,9 +414,70 @@ def displaying_starting_window():
     cv2.destroyAllWindows()
 
 def displaying_gameplay_window():
-    global game_round, p2
+    global game_round, p2, p, d, bg_copy
     gameplay_layout(p_turn = 1)
     gameplay_layout(p_turn = 1, d_turn = 1)
+    
+    def function_sequence(obj):
+        
+        while True:
+            frame = gameplay_layout()
+            cv2.imshow('Splitting Input', frame)
+            k2 = cv2.waitKey(1) & 0xFF
+            if k2 == ord('1'):
+                break
+
+            elif k2 == ord('2'):
+                if obj == p:
+                    gameplay_layout(p_turn = 1)
+                    break
+                else:
+                    gameplay_layout(p2_turn = 1)
+                    break
+
+            elif k2 == ord('3'):
+                if obj.dd == 0:
+                    print('You cannot opt for this yet')
+                    function_sequence(obj)    
+                if obj == p:
+                    gameplay_layout(p_dd = 1)
+                    break                
+                elif obj == p2:
+                    gameplay_layout(p2_dd = 1)
+                    break
+
+            elif k2 == ord('4'):
+                print('Please Just Do Not')
+                function_sequence(obj)
+
+            elif k2 == ord('5'):
+                obj.surrender2()
+                break
+        
+        cv2.destroyWindow('Splitting Input')
+        return 0
+    
+    def winning_condition():
+        global game_round
+
+        if p.win == 0 and p2.win == 0:
+            return 1
+
+        if p.surrender == 1 or p2.surrender == 1:
+            return 1
+        
+        if p.win == 1 or p2.win == 1:
+            if p.win == 1 and p2.win == 1:
+                pass
+            else:
+                p.bet = int(p.bet/2)
+            return 1
+
+        if bj_p == 1 and bj_p2 == 1 and bj_d == 1:
+            game_round += 1
+            print('It was a Tie, Begin again...')
+            start(p)
+            displaying_gameplay_window()
     
     while True:
 
@@ -432,6 +499,7 @@ def displaying_gameplay_window():
                     print('It was a Tie, Begin again...')
                     start(p)
                     displaying_gameplay_window()
+                    bg_copy = black.copy()
                 else:
                     p.win = 0
                     #displaying_ending_window()
@@ -486,6 +554,7 @@ def displaying_gameplay_window():
                         print('It was a Tie, Begin again...')
                         start(p)
                         displaying_gameplay_window()
+                        bg_copy = black.copy()
                     else:
                         p.win = 0
                         #displaying_ending_window()
@@ -544,6 +613,7 @@ def displaying_gameplay_window():
                             print('It was a Tie, Begin again...')
                             start(p)
                             displaying_gameplay_window()
+                            bg_copy = black.copy()
                         else:
                             p.win = 0
                             #displaying_ending_window()
@@ -577,6 +647,7 @@ def displaying_gameplay_window():
                         print('It was a Tie, Begin again...')
                         start(p)
                         displaying_gameplay_window()
+                        bg_copy = black.copy()
                     
                     else:
                         p.win = 0
@@ -588,10 +659,92 @@ def displaying_gameplay_window():
             else:
                 p.double_betting()
                 p2 = Player(p)
-                print(p2.cards)
-                gameplay_layout(p_split = 1)    
-                  
-        if p.win is None and p.surrender == 0:
+                
+                gameplay_layout(p_split = 1)
+                gameplay_layout(p_turn = 1)
+                gameplay_layout(p2_turn = 1)
+                #cv2.destroyWindow('BlackJack Gameplay')
+                frame = gameplay_layout()
+                cv2.imshow('BlackJack Gameplay', frame)
+                function_sequence(p)
+                function_sequence(p2)
+                gameplay_layout(d_turn = 1)
+                frame = gameplay_layout()
+                cv2.imshow('BlackJack Gameplay', frame)
+                
+                while True:
+                    b_p = bust_check(p)
+                    if b_p == 1:
+                        p.win = 0 
+                    
+                    b_p2 = bust_check(p2)
+                    if b_p2 == 1:
+                        p2.win = 0
+                    
+                    bj_p = bj_check(p)
+                    bj_p2 = bj_check(p2)
+                    bj_d = bj_check(d)
+
+                    o = winning_condition()
+                    if o == 1:
+                        break
+                    if bj_d == 1:
+                        p.win = 0
+                        p2.win = 0
+                    else:
+                        if bj_p2 == 1 or bj_p == 1:
+                            p.win = 1
+                            p2.win = 1
+                        
+                    o = winning_condition()
+                    if o == 1:
+                        break
+
+                    w = winning_check(obj_list)
+                    if w == 1:
+                        gameplay_layout(d_turn = 1)
+                        frame = gameplay_layout()
+                        cv2.imshow('BlackJack Gameplay', frame)
+                        b_d = bust_check(d)
+                        if b_d == 1:
+                            p.win = 1
+                        else:
+                            bj_d = bj_check(d)
+                            if bj_d == 1:
+                                p.win = 0
+                                p2.win = 0
+                            else:
+                                w = winning_check(obj_list)
+                                if w == 1:
+                                    p.win = 1
+                                elif w == 2 or w == 22 or w == 21:
+                                    print("It's been already a long game, let's start again please")
+                                    game_round += 1
+                                    start(p)
+                                    displaying_gameplay_window()
+                                    bg_copy = black.copy()
+                                elif w == 0:
+                                    p.win = 0
+                                    p2.win = 0
+                                
+                    elif w == 0:
+                        p.win = 0
+                        p2.win = 0
+                    elif w == 22:
+                        function_sequence(p2)
+                        frame = gameplay_layout()
+                        cv2.imshow('BlackJack Gameplay', frame)
+                        continue
+                    elif w == 21:
+                        function_sequence(p)
+                        frame = gameplay_layout()
+                        cv2.imshow('BlackJack Gameplay', frame)
+                        continue
+                    o = winning_condition()
+                    if o == 1:
+                        break                     
+        
+        if p.win is None and p.surrender == 0 :#and p2.win is None and p2.surrender == 0:
             continue
         else:
             frame = gameplay_layout()
@@ -646,6 +799,7 @@ def turn_check(obj_list):
 def cards_value(obj):
     l=[]
     l_values = []
+    l_sum = 0
     l_sum = sum(l_values)
     a = 0
 
@@ -695,6 +849,7 @@ def cards_value(obj):
         obj.l = l
         obj.l_values = l_values
     
+    #obj.card_value = l_sum
     return l_sum
 
 def card_distribution(obj):    
@@ -733,25 +888,30 @@ def winning_check(obj_list):
             return 1
 
         elif obj_list[2].card_value == obj_list[1].card_value or obj_list[0].card_value == obj_list[1].card_value:
-            return 2
+            if obj_list[2].card_value == obj_list[1].card_value:
+                return 22
+            elif obj_list[0].card_value == obj_list[1].card_value:
+                return 21
 
         else:
             return 0
 
-    if obj_list[0].card_value > obj_list[1].card_value:
-        #obj_list[0].win = 1
-        return 1
-    
-    elif obj_list[0].card_value == obj_list[1].card_value:
-        return 2
-  
     else:
-        return 0
+        if obj_list[0].card_value > obj_list[1].card_value:
+            #obj_list[0].win = 1
+            return 1
+    
+        elif obj_list[0].card_value == obj_list[1].card_value:
+            return 2
+    
+        else:
+            return 0
 
 def splitting(obj):
     global obj_list
     p2 = Player(obj)
     obj_list.append(p2)
     obj.l.pop()
+    obj.l2.pop()
     obj.l_values.pop()
     obj.cards.popitem()
