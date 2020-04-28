@@ -772,8 +772,9 @@ def displaying_ending_window():
     global game_round, bg_copy
     flag = 0
     frame2 = 0
-    cv2.destroyWindow('BlackJack Gameplay')
-    
+    #cv2.destroyWindow('BlackJack Gameplay')
+    gameplay_window = 0
+
     while True:
         if flag == 0:
             frame = end_menu_layout()
@@ -797,12 +798,16 @@ def displaying_ending_window():
         elif k == ord('2'):
             game_round += 1
             start(p)
-            displaying_gameplay_window()
             bg_copy = black.copy()
+            gameplay_window = 1
             break
 
 
     cv2.destroyAllWindows()
+    if gameplay_window == 1:
+        cv2.destroyWindow('BlackJack Gameplay')
+        displaying_gameplay_window()
+
 
 def start(obj = None):
     global p, d, obj_list, card_set, len_set
@@ -813,7 +818,7 @@ def start(obj = None):
     p.bet = int(input('Enter the Bet'))
 
     if obj is not None:
-        card_set = ()
+        card_set = set()
         len_set = 0
         if game_round != 0:
             p.pool = obj.pool
