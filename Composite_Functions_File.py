@@ -753,8 +753,11 @@ def displaying_gameplay_window():
                     o = winning_condition()
                     if o == 1:
                         break                     
-        
-        if p.win is None and p.surrender == 0 :#and p2.win is None and p2.surrender == 0:
+
+        elif k == ord('5'):
+            p.surrender2()                
+
+        if p.win is None and p.surrender == 0 :
             continue
         else:
             frame = gameplay_layout()
