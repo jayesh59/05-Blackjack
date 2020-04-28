@@ -553,6 +553,7 @@ def displaying_gameplay_window():
 
         elif k == ord('2'):
             gameplay_layout(p_turn = 1)
+            print(p.card_value)
             b_p = bust_check(p)
             bj_p = bj_check(p)
 
@@ -817,6 +818,7 @@ def cards_value(obj):
     l_sum = 0
     l_sum = sum(l_values)
     a = 0
+    b = 0
 
     for i in obj.cards.values():
         l.append(int(int(i)%100))
@@ -831,7 +833,8 @@ def cards_value(obj):
 
         elif l[i] == 0:
             a = l.pop(i)
-            if i == len(l):
+            b = 1
+            if i == (len(l) - 1):
                 break
             else:
                 continue 
@@ -839,7 +842,7 @@ def cards_value(obj):
         l_values.append(l[i])
         
     l_sum = sum(l_values)
-    if a != 0: 
+    if b == 1: 
         a_value = 21 - l_sum 
         if a_value-1>=0:
 
@@ -892,18 +895,20 @@ def bj_check(obj):
     if obj.card_value == 21:
         
         if obj == p:
-            obj.bet = obj.bet + (obj.bet/2)
+            obj.bet = (obj.bet + (obj.bet/2))
         return 1
 
     else:
         return 0
 
 def bust_check(obj):
-    
+    print(f'{obj} bust check') 
     if obj.card_value > 21:
+        print(f'{obj} bust')
         return 1
 
     else:
+        print(f'{obj} no bust')
         return 0
 
 def winning_check(obj_list):
