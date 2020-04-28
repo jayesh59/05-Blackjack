@@ -7,7 +7,7 @@ global p, p2, d
 
 s = displaying_starting_window()
 
-if s == 1:
+if s != 0:
     displaying_gameplay_window()
 
 

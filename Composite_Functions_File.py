@@ -408,9 +408,16 @@ def displaying_starting_window():
 
         elif k == ord('1'):
             start()
-            return 1
             break
-            
+
+        elif k == ord('2'):
+            while True:
+                frame2 = cv2.imread('Rules.jpg')
+                cv2.imshow('Rules', frame2)
+                k2 = cv2.waitKey(1) & 0xFF
+                if k2 == 32:
+                    break
+            cv2.destroyWindow('Rules')         
 
     cv2.destroyAllWindows()
 
