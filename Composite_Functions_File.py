@@ -14,22 +14,6 @@ p2 = 0
 obj_list = 0
 game_round = 0
 
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-
-shape = (720,1680,3)
-black = np.zeros(shape)
-bg_copy = black.copy()
-card_set = set()
-len_set = 0
-p = 0
-d = 0
-p2 = 0
-obj_list = 0
-game_round = 0
-
 class Dealer:
    def __init__ (self):
 
@@ -509,7 +493,7 @@ def displaying_gameplay_window():
 
         elif k == ord('1'):
             gameplay_layout(d_turn = 1)
-            
+            d.card_value = cards_value(d)
             bj_d = bj_check(d)
             if bj_d == 1:
                 if bj_p == 1:
@@ -533,6 +517,7 @@ def displaying_gameplay_window():
            
             if w == 1:
                 gameplay_layout(d_turn = 1)
+                d.card_value = cards_value(d)
                 b_d = bust_check(d)
                 if b_d == 0:
                     w = winning_check(obj_list)
@@ -556,6 +541,7 @@ def displaying_gameplay_window():
 
         elif k == ord('2'):
             gameplay_layout(p_turn = 1)
+            p.card_value = cards_value(p)
             print(p.card_value)
             b_p = bust_check(p)
             bj_p = bj_check(p)
@@ -566,6 +552,7 @@ def displaying_gameplay_window():
 
             else:
                 gameplay_layout(d_turn = 1)
+                d.card_value = cards_value(d)
                 bj_d = bj_check(d)
                 if bj_d == 1:
                     if bj_p == 1:
@@ -616,6 +603,7 @@ def displaying_gameplay_window():
             else:
                 p.double_betting()
                 gameplay_layout(p_dd = 1)
+                p.card_value = cards_value(p)
                 b_p = bust_check(p)
                 #b_d = bust_check(d)
                 if b_p == 1:
@@ -623,6 +611,7 @@ def displaying_gameplay_window():
                     #displaying_ending_window()
 
                 else:
+                    d.card_value = cards_value(d)
                     bj_p = bj_check(p)
                     bj_d = bj_check(d)
                  
@@ -647,6 +636,7 @@ def displaying_gameplay_window():
                     w = winning_check(obj_list)
                     if w == 1:
                         gameplay_layout(d_turn = 1)
+                        d.card_value = cards_value(d)
                         b_d = bust_check(d)
                         if b_d == 0:
                             w = winning_check(obj_list)
