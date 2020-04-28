@@ -832,11 +832,12 @@ def cards_value(obj):
             l[i] = 10
 
         elif l[i] == 0:
-            a = l.pop(i)
             b = 1
-            if i == (len(l) - 1):
+            if i == len(l):
+                a = l.pop(i)
                 break
             else:
+                a = l.pop(i)
                 continue 
         
         l_values.append(l[i])
