@@ -769,19 +769,38 @@ def displaying_gameplay_window():
     cv2.destroyAllWindows()
 
 def displaying_ending_window():
-
+    global game_round, bg_copy
+    flag = 0
+    frame2 = 0
+    cv2.destroyWindow('BlackJack Gameplay')
+    
     while True:
-
-        frame = end_menu_layout()
+        if flag == 0:
+            frame = end_menu_layout()
+        else:
+            frame = frame2
+        
         cv2.imshow('BlackJack Finish', frame)
-
+        #img = frame.copy()
         k = cv2.waitKey(1) & 0xFF
 
-        if k == 27:
+        if k == 27 or k == ord('3'):
             break
 
+        elif k == 32:
+            flag = 0
+
         elif k == ord('1'):
-            pass
+            frame2 = stats_show_at_end()
+            flag = 1
+
+        elif k == ord('2'):
+            game_round += 1
+            start(p)
+            displaying_gameplay_window()
+            bg_copy = black.copy()
+            break
+
 
     cv2.destroyAllWindows()
 
@@ -940,3 +959,26 @@ def splitting(obj):
     obj.l2.pop()
     obj.l_values.pop()
     obj.cards.popitem()
+
+def stats_show_at_end():
+    global black
+    img = black.copy()
+    y = 0
+    p.pool_value()
+    obj = p
+    
+    if obj.surrender == 1 :
+        cv2.putText(img,'U Surrendered!',(320, 247), cv2.FONT_HERSHEY_COMPLEX, 4, (255,255,255), 10)
+
+    elif obj.win == 0:
+        cv2.putText(img,'Defeat !!!',(423, 247), cv2.FONT_HERSHEY_COMPLEX, 5, (255,255,255), 10)
+
+    elif obj.win == 1:
+        cv2.putText(img,'Victory!!!',(423, 247), cv2.FONT_HERSHEY_COMPLEX, 5, (255,255,255), 10)
+   
+    stats  = stats_layout(p)
+    stats_y, stats_x, _ =  stats.shape
+    img[715-stats_y:715, 5:5+stats_x] = stats
+
+    return img
+
