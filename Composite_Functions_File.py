@@ -78,7 +78,6 @@ class Player:
             else:
 
                 self.dd = 1
-                #print('4')
                 return 1
 
         else:
@@ -169,9 +168,8 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         card_distribution(obj)
         card = card_layout(obj)
         bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
-        #print(obj.n)
         obj.n += 1
-        #print(obj.n)
+    
     
     def card_display_dealer(obj):
         card_distribution(obj)
@@ -179,8 +177,6 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         bg_copy[170:170+card_y, 1660-card_x - (obj.n*(card_x+10)):1660 - (obj.n*(card_x+10))] = card
         obj.n += 1
    
-    #bg_copy = np.zeros((720,1680,3))
-
     #Shapes Acquiring Functions:
     #for options to show according to the split turn because options will be available to double down too.
     if p2_turn == 1:
@@ -407,10 +403,12 @@ def displaying_starting_window():
         k = cv2.waitKey(1) & 0xFF
 
         if k == 27 or k == ord('3'):
+            return 0
             break
 
         elif k == ord('1'):
             start()
+            return 1
             break
             
 
@@ -543,7 +541,6 @@ def displaying_gameplay_window():
         elif k == ord('2'):
             gameplay_layout(p_turn = 1)
             p.card_value = cards_value(p)
-            print(p.card_value)
             b_p = bust_check(p)
             bj_p = bj_check(p)
 
@@ -969,7 +966,7 @@ def stats_show_at_end():
     global black
     img = black.copy()
     y = 0
-    p.pool_value()
+    #p.pool_value()
     obj = p
     
     if obj.surrender == 1 :
