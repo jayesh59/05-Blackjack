@@ -56,6 +56,7 @@ class Player:
         self.l = []
         self.l_values = []
         self.l2 = []
+        self.bj = 0
 
         if obj is not None:
             self.cards = {f'{obj.l2[-1]}':obj.l2[-1]}
@@ -75,6 +76,8 @@ class Player:
             self.pool = self.pool - ((self.bet)/2)
 
         elif self.win == 1:
+            if self.bj == 1:
+                self.bet = (self.bet + (self.bet/2))
             self.pool = self.pool + self.bet
 
         elif self.win == 0:
@@ -891,7 +894,7 @@ def bj_check(obj):
     if obj.card_value == 21:
         
         if obj == p:
-            obj.bet = (obj.bet + (obj.bet/2))
+            obj.bj = 1
         return 1
 
     else:
