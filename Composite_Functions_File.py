@@ -235,13 +235,14 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
 
     elif p_dd == 1:
         card_distribution(p)
+        p.card_value = cards_value(p)
         card = card_layout(p, 1)
         p.double_betting()
         c_y, c_x, _ = card.shape
         bg_copy[170:170+c_y, 20 + (p.n*(75+10)):20+c_x + (p.n*(75+10))] = card
         p.n += 1
         card_display_dealer(d)
-        d.n += 1
+        #d.n += 1
 
     if p2_dd == 1:
         card_distribution(p2)
@@ -891,13 +892,11 @@ def bj_check(obj):
         return 0
 
 def bust_check(obj):
-    print(f'{obj} bust check') 
+    
     if obj.card_value > 21:
-        print(f'{obj} bust')
         return 1
 
     else:
-        print(f'{obj} no bust')
         return 0
 
 def winning_check(obj_list):
