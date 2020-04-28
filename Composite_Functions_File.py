@@ -81,16 +81,15 @@ class Player:
             self.pool = self.pool - self.bet
 
     def dd_check(self):
-        #l = list(self.cards.values())
-        #print(self.l2)
+        
         if len(self.l2) == 2:
-            #print('2')
+        
             if game_round != 0:
                 if self.pool > self.bet*2:
                     self.dd = 1
                     return 1
             else:
-               # print('3')
+
                 self.dd = 1
                 #print('4')
                 return 1
@@ -832,7 +831,7 @@ def cards_value(obj):
 
         elif l[i] == 0:
             a = l.pop(i)
-            i = i-1
+            #i = i-1
             continue 
         
         l_values.append(l[i])
