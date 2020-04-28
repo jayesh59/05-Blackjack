@@ -831,8 +831,10 @@ def cards_value(obj):
 
         elif l[i] == 0:
             a = l.pop(i)
-            #i = i-1
-            continue 
+            if i == len(l):
+                break
+            else:
+                continue 
         
         l_values.append(l[i])
         
