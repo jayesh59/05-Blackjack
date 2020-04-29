@@ -117,7 +117,6 @@ class Player:
         return 0
        # end_menu(bj_check(),bust_check(),winning_check(),surrender())
 
-
 #Functions that design and returns the layout of the 3 stages of game - Start, Gameplay, End:
 def start_menu_layout():
     global black
@@ -823,7 +822,7 @@ def displaying_ending_window():
         cv2.destroyWindow('BlackJack Gameplay')
         displaying_gameplay_window()
 
-
+#Working Functions of the Game:
 def start(obj = None):
     global p, d, obj_list, card_set, len_set
 
