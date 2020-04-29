@@ -57,13 +57,13 @@ class Player:
 
     def pool_value(self):
         global game_round
-        if game_round != 0:     
+        if game_round != 0 and self.pool > 0 :     
             if self.surrender == 1:
                 self.pool = self.pool - ((self.bet)/2)
 
             elif self.win == 1:
                 if self.bj == 1:
-                    self.bet = (self.bet + (self.bet/2))
+                    self.bet = int(1.5*self.bet)
                 self.pool = self.pool + self.bet
 
             elif self.win == 0:
@@ -72,22 +72,21 @@ class Player:
         else:
             if self.win == 1:
                 if self.bj == 1:
-                    self.bet = (self.bet + (self.bet/2))
-                    self.pool = self.pool + self.bet
+                    self.bet = int(1.5*self.bet)
+                self.pool = self.pool + self.bet
 
-                else:
-                    self.pool = 0
+            else:
+                self.pool = 0
 
     def dd_check(self):
         
         if len(self.l2) == 2:
         
-            if game_round != 0:
+            if game_round != 0 and self.pool > 0:
                 if self.pool > self.bet*2:
                     self.dd = 1
                     return 1
             else:
-
                 self.dd = 1
                 return 1
 
@@ -103,7 +102,7 @@ class Player:
     def split_check(self):
         if len(self.l2) > 1:
             if self.l2[-2]%100 == self.l2[-1]%100:
-                if game_round != 0:
+                if game_round != 0 and self.pool > 0:
                     if self.pool > self.bet*2:
                         self.splitting = 1
                         return 1
@@ -839,7 +838,7 @@ def start(obj = None):
         if game_round != 0:
             p.pool = obj.pool
             if p.pool > 0:
-                if p.pool>p.bet:
+                if p.pool<p.bet:
                     print('Bet Only What You Can Afford.')
                     p.bet = int(input('Enter the Bet'))
             
