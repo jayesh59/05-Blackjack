@@ -56,16 +56,27 @@ class Player:
             self.dd = 0
 
     def pool_value(self):
-        if self.surrender == 1:
-            self.pool = self.pool - ((self.bet)/2)
+        global game_round
+        if game_round != 0:     
+            if self.surrender == 1:
+                self.pool = self.pool - ((self.bet)/2)
 
-        elif self.win == 1:
-            if self.bj == 1:
-                self.bet = (self.bet + (self.bet/2))
-            self.pool = self.pool + self.bet
+            elif self.win == 1:
+                if self.bj == 1:
+                    self.bet = (self.bet + (self.bet/2))
+                self.pool = self.pool + self.bet
 
-        elif self.win == 0:
-            self.pool = self.pool - self.bet
+            elif self.win == 0:
+                self.pool = self.pool - self.bet
+
+        else:
+            if self.win == 1:
+                if self.bj == 1:
+                    self.bet = (self.bet + (self.bet/2))
+                    self.pool = self.pool + self.bet
+
+                else:
+                    self.pool = 0
 
     def dd_check(self):
         
@@ -128,7 +139,7 @@ def end_menu_layout():
     global black
     img = black.copy()
     y = 0
-    p.pool_value()
+    #p.pool_value()
     obj = p
     
     if obj.surrender == 1 :
@@ -169,8 +180,7 @@ def gameplay_layout(p_turn = 0, d_turn = 0, p2_turn = 0, p_dd = 0, p_split = 0, 
         card = card_layout(obj)
         bg_copy[170 + y:170 + y + card_y, 20 + (obj.n*(card_x+10)):20+card_x + (obj.n*(card_x+10))] = card
         obj.n += 1
-    
-    
+        
     def card_display_dealer(obj):
         card_distribution(obj)
         card = card_layout(obj)
@@ -606,7 +616,7 @@ def displaying_gameplay_window():
                 print('You cannot opt for this yet...')
                 continue
             else:
-                p.double_betting()
+                #p.double_betting()
                 gameplay_layout(p_dd = 1)
                 p.card_value = cards_value(p)
                 b_p = bust_check(p)
@@ -766,6 +776,8 @@ def displaying_gameplay_window():
         else:
             frame = gameplay_layout()
             cv2.imshow('BlackJack Gameplay', frame)
+            p.pool_value()
+            p.bet = 0
             game_round += 1
             displaying_ending_window()
             break
@@ -826,10 +838,11 @@ def start(obj = None):
         len_set = 0
         if game_round != 0:
             p.pool = obj.pool
-            if p.pool>p.bet:
-                print('Bet Only What You Can Afford.')
-                p.bet = int(input('Enter the Bet'))
-
+            if p.pool > 0:
+                if p.pool>p.bet:
+                    print('Bet Only What You Can Afford.')
+                    p.bet = int(input('Enter the Bet'))
+            
         del obj
 
 def turn_check(obj_list):
